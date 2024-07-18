@@ -1,4 +1,6 @@
-import torch 
+import torch
+
+
 class Head(torch.nn.Module):
     def __init__(self, n_embd, head_size, max_seq_length):
         super().__init__()

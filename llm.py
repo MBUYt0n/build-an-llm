@@ -2,6 +2,7 @@ import torch
 from encoder import Encoder
 from decoder import Decoder
 
+
 class llm(torch.nn.Module):
     def __init__(self, vocab_size, max_seq_length, num_heads, num_layers, n_embd):
         super().__init__()

@@ -1,5 +1,6 @@
 import torch
 
+
 class FF(torch.nn.Module):
     def __init__(self, n_embd):
         super().__init__()

@@ -1,6 +1,7 @@
 import torch
 from head import Head
 
+
 class MultiHeadAttention(torch.nn.Module):
     def __init__(self, num_heads, n_embd, max_seq_length):
         super().__init__()

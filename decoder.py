@@ -7,11 +7,11 @@ class Decode(torch.nn.Module):
     def __init__(self, num_heads, n_embd, max_seq_length):
         super().__init__()
         self.attn1 = MultiHeadAttention(num_heads, n_embd, max_seq_length)
-        self.attn2 = MultiHeadAttention(num_heads)
+        self.attn2 = MultiHeadAttention(num_heads, n_embd, max_seq_length)
         self.norm1 = torch.nn.LayerNorm(n_embd)
         self.norm2 = torch.nn.LayerNorm(n_embd)
         self.norm3 = torch.nn.LayerNorm(n_embd)
-        self.ff = FF()
+        self.ff = FF(n_embd)
 
     def forward(self, x, enc):
         attn_out = self.attn1(x, x, x, 1)
@@ -25,16 +25,15 @@ class Decoder(torch.nn.Module):
     def __init__(
         self,
         vocab_size,
-        max_seq_len,
+        max_seq_length,
         num_layers,
         num_heads,
         n_embd,
         hidden_dim,
-        max_seq_length,
     ):
         super().__init__()
         self.embedding = torch.nn.Embedding(vocab_size, n_embd)
-        self.pos_embedding = torch.nn.Embedding(max_seq_len, n_embd)
+        self.pos_embedding = torch.nn.Embedding(max_seq_length, n_embd)
         self.lstm = torch.nn.LSTM(
             n_embd, hidden_dim, batch_first=True
         )  # Initialize LSTM

@@ -1,9 +1,12 @@
 import torch
 from multihead import MultiHeadAttention
+from ff import FF
+
+
 class Encode(torch.nn.Module):
     def __init__(self, num_heads, n_embd, max_seq_length):
         super().__init__()
-        self.ff = FF()
+        self.ff = FF(n_embd)
         self.attn = MultiHeadAttention(num_heads, n_embd, max_seq_length)
         self.l1 = torch.nn.LayerNorm(n_embd)
         self.l2 = torch.nn.LayerNorm(n_embd)
