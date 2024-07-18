@@ -3,7 +3,7 @@ from tok import tokenizer
 from llm import llm
 import numpy as np
 import os
-
+from train_cpu import Trainer
 
 def create_batches(input_data, batch_size, seq_length):
     num_samples, total_length = input_data.shape
@@ -59,16 +59,15 @@ tok = tokenizer(x)
 inputs = tok.fit()
 vocab_size = tok.vocab_size
 
-batch_size = 16
+batch_size = 64
 seq_length = 256
 max_seq_length = 256
 n_embd = 256
 
-batches, out_batches = create_batches(inputs, batch_size, seq_length)
-device = torch.device("cuda")
+device = torch.device("cpu")
 model = llm(
     vocab_size, max_seq_length=max_seq_length, num_heads=4, num_layers=2, n_embd=n_embd
 ).to(device)
 
-a = model.generate(torch.randint(low=0, high=vocab_size, size=(1, 256)).to(device))
-print(tok.decode(a[0].cpu().numpy()))
+t = Trainer(create_batches, model)
+t.train(inputs, batch_size, seq_length)
