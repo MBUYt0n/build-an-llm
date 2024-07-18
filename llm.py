@@ -25,17 +25,14 @@ class llm(torch.nn.Module):
     def generate(self, input_ids, max_length=50):
         self.eval()
         with torch.no_grad():
-            enc_out = self.forward(
-                input_ids
-            )  # Assuming this runs the encoder and returns the output
+            enc_out = self.forward(input_ids)  
             generated = input_ids
 
-            for _ in range(max_length):
-                output = self.forward(input_ids, generated, enc_out=enc_out)
+            for _ in range(max_length - input_ids.size(1)): 
+                output = self.forward(y=generated, enc_out=enc_out)  
                 next_token_logits = output[:, -1, :]
-                next_token_probs = torch.nn.functional.softmax(
-                    next_token_logits, dim=-1
-                )
+                next_token_probs = torch.nn.functional.softmax(next_token_logits, dim=-1)
                 next_token_id = next_token_probs.argmax(dim=-1).unsqueeze(-1)
-                generated = torch.cat([generated[:, 1:], next_token_id], dim=-1)
+                generated = torch.cat([generated, next_token_id], dim=1)  
+        self.train()
         return generated

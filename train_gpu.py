@@ -31,8 +31,7 @@ class Trainer():
                     logits = self.model(a, b)
                     loss = self.lossFn(logits.view(-1, self.model.vocab_size), b.view(-1).long())
 
-                # Zero gradients
-                optimizer.zero_grad()
+                self.optimizer.zero_grad()
 
                 scaler.scale(loss).backward()
 
@@ -41,7 +40,6 @@ class Trainer():
 
                 print(f"Epoch [{epoch+1}/{num_epochs}], Batch [{i+1}], Loss: {loss.item()}")
 
-                # Log the loss
                 writer.add_scalar('Loss/train', loss.item(), epoch * len(inputs) + i)
             
                 a = a.cpu()
