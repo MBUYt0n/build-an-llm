@@ -70,5 +70,5 @@ model = llm(
     vocab_size, max_seq_length=max_seq_length, num_heads=4, num_layers=2, n_embd=n_embd
 ).to(device)
 
-a = model(batches[0].to(device), out_batches[0].to(device))
-print(a.shape)
+a = model.generate(torch.randint(low=0, high=vocab_size, size=(1, 256)).to(device))
+print(tok.decode(a[0].cpu().numpy()))
