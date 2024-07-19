@@ -60,7 +60,7 @@ tok.fit()
 inputs = tok.encode(x)
 vocab_size = tok.vocab_size
 
-batch_size = 64
+batch_size = 32
 seq_length = 256
 max_seq_length = 256
 n_embd = 256
@@ -72,6 +72,8 @@ model = llm(
 
 t = Trainer(create_batches, model)
 t.train(inputs, batch_size, seq_length)
+
+torch.save(model.state_dict(), "model.pth")
 
 a = torch.randint(0, vocab_size, (1, 256)).to(device)
 om = model.generate(a)

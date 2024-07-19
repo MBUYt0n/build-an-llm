@@ -8,7 +8,7 @@ class Trainer():
         self.batch = func
         self.model = model
         self.lossFn = torch.nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=1e-3)
+        self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=1e-4)
 
 
     def train(self, inputs, batch_size, seq_length):
@@ -18,7 +18,7 @@ class Trainer():
         device = torch.device('cuda')
 
         # Number of epochs
-        num_epochs = 1
+        num_epochs = 10
 
         scaler = torch.cuda.amp.GradScaler()
         s, o = self.batch(inputs, batch_size, seq_length)

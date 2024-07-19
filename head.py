@@ -16,12 +16,8 @@ class Head(torch.nn.Module):
         q = self.query(q)
         v = self.values(v)
         w = (q @ k.transpose(-2, -1)) * self.scale_factor
-        if mask:
-            device = w.device
-            tril = torch.tril(
-                torch.ones(self.max_seq_length, self.max_seq_length, device=device)
-            )
-            seq_length = q.size(1)  # Get the sequence length from q
-            w = w.masked_fill(tril[:seq_length, :seq_length] == 0, float("-inf"))
+        if mask is not None:
+            w += mask
+        w = torch.nn.functional.softmax(w, dim=-1)
         w = torch.nn.functional.softmax(w, dim=-1)
         return w @ v
