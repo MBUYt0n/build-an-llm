@@ -10,11 +10,11 @@ class Encode(torch.nn.Module):
         self.attn = MultiHeadAttention(num_heads, n_embd, max_seq_length)
         self.l1 = torch.nn.LayerNorm(n_embd)
         self.l2 = torch.nn.LayerNorm(n_embd)
-        self.dropout1 = torch.nn.Dropout(0.1)
-        self.dropout2 = torch.nn.Dropout(0.1)
+        self.dropout1 = torch.nn.Dropout(0.2)
+        self.dropout2 = torch.nn.Dropout(0.2)
 
     def forward(self, x, mask=None):
-        attn_out = self.attn(x, x, x)
+        attn_out = self.attn(x, x, x, mask)
         x = self.l1(self.dropout1(attn_out) + x)
         ff_out = self.ff(x)
         attn_out = self.attn(ff_out, ff_out, ff_out)
@@ -38,10 +38,9 @@ class Encoder(torch.nn.Module):
             torch.arange(0, seq_length, device=x.device).unsqueeze(0).expand_as(x)
         )
         x = self.embedding(x) + self.pos_embedding(positions)
-        
-        mask = (x != self.pad_token_id).unsqueeze(1).unsqueeze(2).float()
+        mask = (x != self.pad_token_id).float()
         mask = mask.masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
-        
+
         for layer in self.layers:
             x = layer(x, mask)
         return self.norm(x)

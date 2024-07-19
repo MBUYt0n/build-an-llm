@@ -60,14 +60,14 @@ tok.fit()
 inputs = tok.encode(x)
 vocab_size = tok.vocab_size
 
-batch_size = 32
+batch_size = 16
 seq_length = 256
 max_seq_length = 256
 n_embd = 256
 
 device = torch.device("cuda")
 model = llm(
-    vocab_size, max_seq_length=max_seq_length, num_heads=4, num_layers=2, n_embd=n_embd
+    vocab_size, max_seq_length=max_seq_length, num_heads=8, num_layers=4, n_embd=n_embd
 ).to(device)
 
 t = Trainer(create_batches, model)
