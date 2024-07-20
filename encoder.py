@@ -37,10 +37,9 @@ class Encoder(torch.nn.Module):
         positions = (
             torch.arange(0, seq_length, device=x.device).unsqueeze(0).expand_as(x)
         )
-        x = self.embedding(x) + self.pos_embedding(positions)
+        x1 = self.embedding(x) + self.pos_embedding(positions)
         mask = (x != self.pad_token_id).float()
-        mask = mask.masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
-
+        mask = mask.unsqueeze(1)
         for layer in self.layers:
-            x = layer(x, mask)
-        return self.norm(x)
+            x1 = layer(x1, mask)
+        return self.norm(x1)

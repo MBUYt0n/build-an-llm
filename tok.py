@@ -23,3 +23,4 @@ class tokenizer:
 
     def decode(self, x):
         return "".join([self.detoken[int(i)] for i in x if i != 0])
+

@@ -19,7 +19,7 @@ class Decode(torch.nn.Module):
     def forward(self, x, enc, mask=None):
         attn_out = self.attn1(x, x, x, mask)
         x = self.norm1(x + self.dropout1(attn_out))
-        attn_out = self.attn2(x, enc, enc, 1)
+        attn_out = self.attn2(x, enc, enc, mask)
         x = self.norm2(x + self.dropout2(attn_out))
         return self.norm3(x + self.dropout3(self.ff(x)))
 
@@ -51,12 +51,10 @@ class Decoder(torch.nn.Module):
         positions = (
             torch.arange(0, seq_length, device=x.device).unsqueeze(0).expand_as(x)
         )
-        x = self.embedding(x) + self.pos_embedding(positions)
-        x, _ = self.lstm(x)
+        x1 = self.embedding(x) + self.pos_embedding(positions)
+        x1, _ = self.lstm(x1)
 
-        mask = (x != self.pad_token_id).unsqueeze(1).unsqueeze(2).float()
-        mask = mask.masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
-
+        mask = (x != self.pad_token_id).unsqueeze(1).float()
         for layer in self.layers:
-            x = layer(x, enc_output, mask)
-        return self.norm(x)
+            x1 = layer(x1, enc_output, mask)
+        return self.norm(x1)
