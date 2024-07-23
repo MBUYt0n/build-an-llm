@@ -7,7 +7,8 @@ class tokenizer:
         self.x = x
 
     def preprocess(self, x=None):
-        x = x if x else self.x
+        if x is None:
+            x = self.x
         o = []
         for i in x:
             l = []
@@ -28,7 +29,8 @@ class tokenizer:
         self.detoken = {j: i for i, j in self.tokens.items()}
 
     def encode(self, x):
-        x = self.preprocess(x)
+        if not isinstance(x, torch.Tensor):
+            x = self.preprocess(x)
         inputs = torch.zeros((len(x), self.m), dtype=torch.int64)
         for i in range(len(x)):
             for j in range(len(x[i])):

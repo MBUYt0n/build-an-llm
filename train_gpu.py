@@ -50,7 +50,7 @@ class Trainer:
 
         return batches, out_batches
 
-    def train(self, inputs, evals, batch_size, seq_length, num_epochs=10):
+    def train(self, inputs, evals, batch_size, seq_length, num_epochs=25):
         self.model.train()
         writer = SummaryWriter()
 
