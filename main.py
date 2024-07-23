@@ -13,14 +13,15 @@ for i in l:
         "r",
         errors="replace",
     )
-    x.append(f.read())
+    x.append(f.read().split())
+
 
 tok = tokenizer(x)
 tok.fit()
 inputs = tok.encode(x)
 vocab_size = tok.vocab_size
 
-batch_size = 8
+batch_size = 32
 seq_length = 256
 max_seq_length = 256
 n_embd = 256
@@ -30,7 +31,7 @@ inputs = inputs[:-2]
 
 device = torch.device("cuda")
 model = llm(
-    vocab_size, max_seq_length=max_seq_length, num_heads=16, num_layers=16, n_embd=n_embd
+    vocab_size, max_seq_length=max_seq_length, num_heads=8, num_layers=4, n_embd=n_embd
 ).to(device)
 
 t = Trainer(model)
