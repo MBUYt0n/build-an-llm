@@ -24,22 +24,19 @@ class llm(torch.nn.Module):
 
     def generate(self, input_ids, max_length=50):
         self.eval()
-        out = []
         with torch.no_grad():
             enc_out = self.forward(input_ids)
             generated = input_ids
-
+            print("gen1", generated.shape)
             for _ in range(max_length - input_ids.size(1)):
-                output = self.forward(None, y=generated, enc_out=enc_out)
+                g = generated[:, -self.max_seq_length :]
+                output = self.forward(None, y=g, enc_out=enc_out)
                 next_token_logits = output[:, -1, :]
                 next_token_probs = torch.nn.functional.softmax(
                     next_token_logits, dim=-1
                 )
                 next_token_id = next_token_probs.argmax(dim=-1).unsqueeze(-1)
-                out.append(next_token_id)
-                print("gen", generated[:, 1:].shape)
-                generated = torch.cat([generated[:, 1:], next_token_id], dim=1)
+                generated = torch.cat([generated, next_token_id], dim=1)
 
         self.train()
-        return torch.cat(out, dim=1)
-        # return generated
+        return generated

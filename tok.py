@@ -1,43 +1,48 @@
 import torch
 import re
+import gc
 
 
 class tokenizer:
     def __init__(self, x):
         self.x = x
 
-    def preprocess(self, x=None):
-        if x is None:
-            x = self.x
+    def preprocess(self, x):
         o = []
+        x = x.split()
         for i in x:
-            l = []
-            for j in i:
-                j = re.sub(r"[^a-zA-z0-9]", "", j.lower())
-                if j:
-                    l.append(j)
-            o.append(l)
+            j = re.sub(r"[^a-zA-z0-9]", "", i.lower())
+            o.append(j)
         return o
 
-    def fit(self):
-        self.x = self.preprocess()
-        tokens = set([j for i in self.x for j in i])
+    def fit(self, x=None):
+        if x is None:
+            x = self.x
+        tokens = set()
+        for i in x:
+            tokens = tokens.union(set(self.preprocess(i)))
         self.vocab_size = len(tokens) + 1
         self.tokens = {i: j for i, j in zip(tokens, range(1, self.vocab_size))}
         self.tokens["<PAD>"] = 0
-        self.m = max([len(i) for i in self.x])
         self.detoken = {j: i for i, j in self.tokens.items()}
+        del self.x
+        gc.collect()
 
     def encode(self, x):
-        if not isinstance(x, torch.Tensor):
-            x = self.preprocess(x)
-        inputs = torch.zeros((len(x), self.m), dtype=torch.int64)
-        for i in range(len(x)):
-            for j in range(len(x[i])):
+        l = []
+        for i in x:
+            l.append(self.preprocess(i))
+        del x
+        gc.collect()
+
+        inputs = []
+        for i in range(len(l)):
+            inputs.append([])
+            for j in range(len(l[i])):
                 try:
-                    inputs[i, j] = self.tokens[x[i][j]]
+                    inputs[i].append(self.tokens[l[i][j]])
                 except:
-                    inputs[i, j] = 0
+                    inputs[i].append(0)
 
         return inputs
 

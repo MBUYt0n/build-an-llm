@@ -165,13 +165,17 @@
 # out = head(a, a, a, mask)
 # print(out.shape)
 
-import torch
+# import torch
 
-b = torch.randint(0, 10, (8, 256, 256)).float()
+# b = torch.randint(0, 10, (8, 256, 256)).float()
 
-for i in range(10):
-    a = torch.randint(0, 10, (8, 256, 256), dtype=torch.float32)
-    b = b.masked_fill(a == 0, float("-inf"))
-    print(b.shape)
-a = torch.nn.functional.softmax(b, dim=-1).shape
-print("A", a)
+# for i in range(10):
+#     a = torch.randint(0, 10, (8, 256, 256), dtype=torch.float32)
+#     b = b.masked_fill(a == 0, float("-inf"))
+#     print(b.shape)
+# a = torch.nn.functional.softmax(b, dim=-1).shape
+# print("A", a)
+
+with open("/home/shusrith/projects/blind-eyes/build-an-llm/data/Captain.Marvel.txt", "r") as f:
+    x = f.read().split()
+    print(set(x))
