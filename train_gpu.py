@@ -12,59 +12,80 @@ class Trainer:
             self.optimizer, "min", patience=2, factor=0.5
         )
 
-    def create_batches(self, input_data, batch_size, seq_length):
-        num_samples, total_length = input_data.shape
-        num_chunks = total_length // seq_length + (total_length % seq_length != 0)
+    # def create_batches(self, input_data, batch_size, seq_length):
+    #     num_samples, total_length = input_data.shape
+    #     num_chunks = total_length // seq_length + (total_length % seq_length != 0)
 
-        chunks = []
+    #     chunks = []
+    #     out_chunks = []
+    #     for i in range(num_samples):
+    #         for j in range(num_chunks):
+    #             start_idx = j * seq_length
+    #             end_idx = min(start_idx + seq_length, total_length)
+    #             chunk = input_data[i, start_idx:end_idx]
+
+    #             out_start_idx = start_idx + 1
+    #             out_end_idx = min(out_start_idx + seq_length, total_length)
+    #             out_chunk = input_data[i, out_start_idx:out_end_idx]
+
+    #             if end_idx - start_idx < seq_length:
+    #                 padding = torch.zeros(
+    #                     seq_length - (end_idx - start_idx), dtype=chunk.dtype
+    #                 )
+    #                 chunk = torch.cat([chunk, padding])
+    #                 out_padding = torch.zeros(
+    #                     seq_length - (out_end_idx - out_start_idx),
+    #                     dtype=out_chunk.dtype,
+    #                 )
+    #                 out_chunk = torch.cat([out_chunk, out_padding])
+
+    #             chunks.append(chunk)
+    #             out_chunks.append(out_chunk)
+
+    #     chunks = torch.stack(chunks)
+    #     batches = torch.split(chunks, batch_size)
+
+    #     out_chunks = torch.stack(out_chunks)
+    #     out_batches = torch.split(out_chunks, batch_size)
+
+    #     return batches, out_batches
+
+    def batches(self, input_data, batch_size, seq_length):
+        in_chunks = []
         out_chunks = []
-        for i in range(num_samples):
-            for j in range(num_chunks):
-                start_idx = j * seq_length
-                end_idx = min(start_idx + seq_length, total_length)
-                chunk = input_data[i, start_idx:end_idx]
 
-                out_start_idx = start_idx + 1
-                out_end_idx = min(out_start_idx + seq_length, total_length)
-                out_chunk = input_data[i, out_start_idx:out_end_idx]
+        for i in input_data:
+            d = len(i) % seq_length
+            for j in range(0, len(i) - seq_length, seq_length):
+                in_chunks.append(torch.tensor(i[j : j + seq_length]))
+                out_chunks.append(torch.tensor(i[j + 1 : j + seq_length + 1]))
+            x = torch.tensor(i[-d:])
+            y = torch.tensor(i[-d - 1 :])
+            padding = torch.zeros(seq_length - d, dtype=x.dtype)
+            padding_y = torch.zeros(seq_length - d - 1, dtype=y.dtype)
+            y = torch.cat([y, padding_y])
+            x = torch.cat([x, padding])
+            in_chunks.append(x)
+            out_chunks.append(y)
 
-                if end_idx - start_idx < seq_length:
-                    padding = torch.zeros(
-                        seq_length - (end_idx - start_idx), dtype=chunk.dtype
-                    )
-                    chunk = torch.cat([chunk, padding])
-                    out_padding = torch.zeros(
-                        seq_length - (out_end_idx - out_start_idx),
-                        dtype=out_chunk.dtype,
-                    )
-                    out_chunk = torch.cat([out_chunk, out_padding])
-
-                chunks.append(chunk)
-                out_chunks.append(out_chunk)
-
-        chunks = torch.stack(chunks)
-        batches = torch.split(chunks, batch_size)
-
+        in_chunks = torch.stack(in_chunks)
         out_chunks = torch.stack(out_chunks)
-        out_batches = torch.split(out_chunks, batch_size)
-
-        return batches, out_batches
+        return in_chunks, out_chunks
 
     def train(self, inputs, evals, batch_size, seq_length, num_epochs=25):
         self.model.train()
         writer = SummaryWriter()
 
         device = torch.device("cuda")
-        s, o = self.create_batches(inputs, batch_size, seq_length)
+        s, o = self.batches(inputs, batch_size, seq_length)
         scaler = torch.cuda.amp.GradScaler()
 
         for epoch in range(num_epochs):
             epoch_loss = 0
 
             for i, (a, b) in enumerate(zip(s, o)):
-                a = a.to(device)
-                b = b.to(device)
-
+                a = a.view(1, 256).to(device)
+                b = b.view(1, 256).to(device)
                 with torch.cuda.amp.autocast():
                     logits = self.model(a, b)
                     logits = logits.view(-1, self.model.vocab_size)

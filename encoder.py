@@ -12,13 +12,15 @@ class Encode(torch.nn.Module):
         self.l2 = torch.nn.LayerNorm(n_embd)
         self.dropout1 = torch.nn.Dropout(0.2)
         self.dropout2 = torch.nn.Dropout(0.2)
+        self.dropout3 = torch.nn.Dropout(0.2)
 
     def forward(self, x, mask=None):
         attn_out = self.attn(x, x, x, mask)
         x = self.l1(self.dropout1(attn_out) + x)
         ff_out = self.ff(x)
-        attn_out = self.attn(ff_out, ff_out, ff_out)
-        return self.l2(self.dropout2(attn_out) + ff_out)
+        ff_out = self.l2(self.dropout2(ff_out) + x)
+        attn_out = self.attn(ff_out, ff_out, ff_out, mask)
+        return self.l2(self.dropout3(attn_out) + ff_out)
 
 
 class Encoder(torch.nn.Module):
