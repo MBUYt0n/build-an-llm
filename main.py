@@ -37,9 +37,11 @@ model = llm(
     vocab_size, max_seq_length=max_seq_length, num_heads=8, num_layers=4, n_embd=n_embd
 ).to(device)
 t = Trainer(model)
-t.train(inputs, evals, batch_size, seq_length)
+s, _ = t.batches(inputs, 1, 256)
 
-torch.save(model.state_dict(), "model.pth")
+# t.train(inputs, evals, batch_size, seq_length)
+
+# torch.save(model.state_dict(), "model.pth")
 # model.load_state_dict(torch.load("model.pth"))
 
 # a = tok.encode(["Black widow was".split()])

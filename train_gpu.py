@@ -56,9 +56,11 @@ class Trainer:
 
         for i in input_data:
             d = len(i) % seq_length
+            ins = []
+            outs = []
             for j in range(0, len(i) - seq_length, seq_length):
-                in_chunks.append(torch.tensor(i[j : j + seq_length]))
-                out_chunks.append(torch.tensor(i[j + 1 : j + seq_length + 1]))
+                ins.append(torch.tensor(i[j : j + seq_length]))
+                outs.append(torch.tensor(i[j + 1 : j + seq_length + 1]))
             x = torch.tensor(i[-d:])
             y = torch.tensor(i[-d - 1 :])
             padding = torch.zeros(seq_length - d, dtype=x.dtype)
@@ -67,7 +69,11 @@ class Trainer:
             x = torch.cat([x, padding])
             in_chunks.append(x)
             out_chunks.append(y)
-
+            ins = torch.stack(ins)
+            outs = torch.stack(outs)
+            print(ins.shape, outs.shape)
+            in_chunks.append(ins)
+            out_chunks.append(outs)
         in_chunks = torch.stack(in_chunks)
         out_chunks = torch.stack(out_chunks)
         return in_chunks, out_chunks
@@ -79,7 +85,6 @@ class Trainer:
         device = torch.device("cuda")
         s, o = self.batches(inputs, batch_size, seq_length)
         scaler = torch.cuda.amp.GradScaler()
-
         for epoch in range(num_epochs):
             epoch_loss = 0
 
