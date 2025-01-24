@@ -12,44 +12,6 @@ class Trainer:
             self.optimizer, "min", patience=2, factor=0.5
         )
 
-    # def create_batches(self, input_data, batch_size, seq_length):
-    #     num_samples, total_length = input_data.shape
-    #     num_chunks = total_length // seq_length + (total_length % seq_length != 0)
-
-    #     chunks = []
-    #     out_chunks = []
-    #     for i in range(num_samples):
-    #         for j in range(num_chunks):
-    #             start_idx = j * seq_length
-    #             end_idx = min(start_idx + seq_length, total_length)
-    #             chunk = input_data[i, start_idx:end_idx]
-
-    #             out_start_idx = start_idx + 1
-    #             out_end_idx = min(out_start_idx + seq_length, total_length)
-    #             out_chunk = input_data[i, out_start_idx:out_end_idx]
-
-    #             if end_idx - start_idx < seq_length:
-    #                 padding = torch.zeros(
-    #                     seq_length - (end_idx - start_idx), dtype=chunk.dtype
-    #                 )
-    #                 chunk = torch.cat([chunk, padding])
-    #                 out_padding = torch.zeros(
-    #                     seq_length - (out_end_idx - out_start_idx),
-    #                     dtype=out_chunk.dtype,
-    #                 )
-    #                 out_chunk = torch.cat([out_chunk, out_padding])
-
-    #             chunks.append(chunk)
-    #             out_chunks.append(out_chunk)
-
-    #     chunks = torch.stack(chunks)
-    #     batches = torch.split(chunks, batch_size)
-
-    #     out_chunks = torch.stack(out_chunks)
-    #     out_batches = torch.split(out_chunks, batch_size)
-
-    #     return batches, out_batches
-
     def batches(self, input_data, batch_size, seq_length):
         in_chunks = []
         out_chunks = []
