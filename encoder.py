@@ -1,6 +1,8 @@
 import torch
 from multihead import MultiHeadAttention
 from ff import FF
+from tok import Tokenize
+import os
 
 
 class Encode(torch.nn.Module):
@@ -14,12 +16,12 @@ class Encode(torch.nn.Module):
         self.dropout2 = torch.nn.Dropout(0.2)
         self.dropout3 = torch.nn.Dropout(0.2)
 
-    def forward(self, x, mask=None):
-        attn_out = self.attn(x, x, x, mask)
+    def forward(self, x):
+        attn_out = self.attn(x, x, x)
         x = self.l1(self.dropout1(attn_out) + x)
         ff_out = self.ff(x)
         ff_out = self.l2(self.dropout2(ff_out) + x)
-        attn_out = self.attn(ff_out, ff_out, ff_out, mask)
+        attn_out = self.attn(ff_out, ff_out, ff_out)
         return self.l2(self.dropout3(attn_out) + ff_out)
 
 
@@ -40,8 +42,6 @@ class Encoder(torch.nn.Module):
             torch.arange(0, seq_length, device=x.device).unsqueeze(0).expand_as(x)
         )
         x1 = self.embedding(x) + self.pos_embedding(positions)
-        mask = (x != self.pad_token_id).float()
-        mask = mask.unsqueeze(1)
         for layer in self.layers:
-            x1 = layer(x1, mask)
+            x1 = layer(x1)
         return self.norm(x1)

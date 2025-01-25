@@ -549,7 +549,7 @@ Slight foxing around the edges, but...
 We got a hit. A 67% match.
 Wait. Cross match, 79%.
 Location?
-Stuttgart, Germany. 28 Königstrasse.
+Stuttgart, Germany. 28 Konigstrasse.
 He's not exactly hiding.
 Captain,
 you're up.
@@ -897,7 +897,7 @@ You may not enjoy that.
 And you just might.
 As soon as Loki took the doctor,
 we moved Jane Foster.
-They've got an excellent observatory in Tromsø.
+They've got an excellent observatory in Troms.
 She was asked to consult there very suddenly yesterday.
 Handsome fee, private plane, very remote.
 She'll be safe.
@@ -967,7 +967,7 @@ I got red in my ledger, I'd like to wipe it out.
 Can you?
 Can you wipe out that much red?
 Dreykov's daughter,
-São Paulo,
+Sao Paulo,
 the hospital fire?
 Barton told me everything.
 Your ledger is dripping. It's gushing red
@@ -1055,7 +1055,7 @@ I'm sorry, isn't everything?
 I thought humans were more evolved than this.
 Excuse me, did we come to your planet and blow stuff up?
 You treat your champions with such mistrust.
-Are you boys really that naïve?
+Are you boys really that naive?
 S.H.I.E.L.D. Monitors potential threats.
 Captain America's on threat watch?
 We all are.

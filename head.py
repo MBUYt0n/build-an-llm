@@ -11,13 +11,11 @@ class Head(torch.nn.Module):
         self.scale_factor = self.head_size**-0.5
         self.max_seq_length = max_seq_length
 
-    def forward(self, q, k, v, mask=None):
+    def forward(self, q, k, v):
         k = self.key(k)
         q = self.query(q)
         v = self.values(v)
         w = (q @ k.transpose(-2, -1)) * self.scale_factor
 
-        if mask is not None:
-            w = w.masked_fill(mask == 0, float("1e-9"))
         w = torch.nn.functional.softmax(w, dim=-1)
         return w @ v

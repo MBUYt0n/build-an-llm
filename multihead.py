@@ -13,7 +13,7 @@ class MultiHeadAttention(torch.nn.Module):
         )
         self.out = torch.nn.Linear(n_embd, n_embd)
 
-    def forward(self, q, k, v, mask=None):
-        head_out = [head(q, k, v, mask) for head in self.heads]
+    def forward(self, q, k, v):
+        head_out = [head(q, k, v) for head in self.heads]
         concat = torch.cat(head_out, dim=-1)
         return self.out(concat)
