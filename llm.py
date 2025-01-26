@@ -7,9 +7,7 @@ class LLM(torch.nn.Module):
     def __init__(self, vocab_size, max_seq_length, num_heads, num_layers, n_embd):
         super().__init__()
         self.enc = Encoder(vocab_size, max_seq_length, num_heads, num_layers, n_embd)
-        self.dec = Decoder(
-            vocab_size, max_seq_length, num_heads, num_layers, n_embd, hidden_dim=n_embd
-        )
+        self.dec = Decoder(vocab_size, max_seq_length, num_heads, num_layers, n_embd)
         self.out = torch.nn.Linear(n_embd, vocab_size)
         self.max_seq_length = max_seq_length
         self.vocab_size = vocab_size
@@ -23,20 +21,14 @@ class LLM(torch.nn.Module):
         return enc_out
 
     def generate(self, input_ids, max_length=50):
-        self.eval()
+        output = [int(i) for i in input_ids[0]]
         with torch.no_grad():
-            enc_out = self.forward(input_ids)
-            generated = input_ids
-            print("gen1", generated.shape)
-            for _ in range(max_length - input_ids.size(1)):
-                g = generated[:, -self.max_seq_length :]
-                output = self.forward(None, y=g, enc_out=enc_out)
-                next_token_logits = output[:, -1, :]
-                next_token_probs = torch.nn.functional.softmax(
-                    next_token_logits, dim=-1
-                )
-                next_token_id = next_token_probs.argmax(dim=-1).unsqueeze(-1)
-                generated = torch.cat([generated, next_token_id], dim=1)
+            for _ in range(max_length):
+                input_ids = input_ids.to("cuda")
+                enc_out = self.forward(input_ids)
+                generated = enc_out[:, -1, :].softmax(dim=-1).argmax(dim=-1)
+                output.append(generated.item())
+                input_ids = torch.cat([input_ids, generated.unsqueeze(0)], dim=1)
 
-        self.train()
-        return generated
+        return output
+

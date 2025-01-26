@@ -22,4 +22,7 @@ class Tokenize:
         for j in toks:
             for i in range(seq_length, len(j) - 1):
                 inps.append(j[i - seq_length : i + 1])
-        return torch.utils.data.DataLoader(inps, batch_size=32, shuffle=True)
+        return torch.utils.data.DataLoader(inps, batch_size=256, shuffle=True)
+
+    def decode(self, x):
+        return self.tokenizer.decode(x)

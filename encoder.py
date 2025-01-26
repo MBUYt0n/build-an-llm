@@ -34,7 +34,7 @@ class Encoder(torch.nn.Module):
             [Encode(num_heads, n_embd, max_seq_length) for i in range(num_layers)]
         )
         self.norm = torch.nn.LayerNorm(n_embd)
-        self.pad_token_id = 0
+        self.linear = torch.nn.Linear(n_embd, vocab_size)
 
     def forward(self, x):
         seq_length = x.shape[1]
@@ -44,4 +44,4 @@ class Encoder(torch.nn.Module):
         x1 = self.embedding(x) + self.pos_embedding(positions)
         for layer in self.layers:
             x1 = layer(x1)
-        return self.norm(x1)
+        return self.linear(self.norm(x1))
