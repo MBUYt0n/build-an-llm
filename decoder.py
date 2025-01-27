@@ -1,9 +1,6 @@
 import torch
 from multihead import MultiHeadAttention
 from ff import FF
-import os
-from tok import Tokenize
-from encoder import Encoder
 
 
 class Decode(torch.nn.Module):

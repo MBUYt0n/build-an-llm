@@ -1,8 +1,6 @@
 import torch
 from multihead import MultiHeadAttention
 from ff import FF
-from tok import Tokenize
-import os
 
 
 class Encode(torch.nn.Module):

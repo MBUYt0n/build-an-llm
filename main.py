@@ -1,7 +1,6 @@
 import torch
 from tok import Tokenize
 from llm import LLM
-import numpy as np
 import os
 from train_gpu import Trainer
 
